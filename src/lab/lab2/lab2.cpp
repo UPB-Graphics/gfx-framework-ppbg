@@ -26,6 +26,8 @@ void Lab2::Initialize()
     // draw the geometric shapes 4 times, once in each quadrant
 
     DrawShapes();
+
+    
 }
 
 void Lab2::DrawShapes()
@@ -149,6 +151,8 @@ void Lab2::DrawShapes()
 
         Rasterize(vertices, indices, transformation);
     }
+
+    // TODO: [Bonus] create a star by rotating 5 triangles around a point
 }
 
 void Lab2::Rasterize(
