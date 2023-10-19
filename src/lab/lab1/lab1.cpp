@@ -20,7 +20,46 @@ void Lab1::Initialize()
     image->Init(1280, 720, 3 /* channels */);
     depthImage->Init(1280, 720, 1 /* channels */, glm::vec3 (1) /* initial value */);
 
-    {
+    float drawBonus = true;
+
+    if (drawBonus) {
+        float center_x = 640;
+        float center_y = 360;
+        float radius = 200.f;
+        int numTrianges = 16; // control fidelity
+        float const PI = 3.14f;
+
+        vector<VertexFormat> vertices
+        {
+            VertexFormat(glm::vec3(center_x, center_y, 0), glm::vec3(0, 1, 0)),
+        };
+
+        for (int i = 0; i < numTrianges; ++i) {
+            float alpha = 2.f * PI * float(i) / numTrianges;
+
+            float x = center_x + radius * cosf(alpha);
+            float y = center_y + radius * sinf(alpha);
+            vertices.push_back(VertexFormat(glm::vec3(x, y, 0), glm::vec3(1, 1, 1)));
+        }
+
+        vector<unsigned int> indices;
+
+        for (int i = 1; i <= numTrianges; ++i) {
+            if (i == numTrianges) {
+                indices.push_back(0);
+                indices.push_back(numTrianges);
+                indices.push_back(1);
+            }
+            else {
+                indices.push_back(0);
+                indices.push_back(i);
+                indices.push_back(i + 1);
+            }
+        }
+
+        Rasterize(vertices, indices);
+    }
+    else {
         vector<VertexFormat> vertices
         {
             VertexFormat(glm::vec3(290, 90,  0.5), glm::vec3(1, 0, 0)),

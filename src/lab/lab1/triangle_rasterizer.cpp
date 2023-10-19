@@ -51,8 +51,15 @@ float TriangleRasterizer::ComputeTriangleArea(
     // the triangle determined by vertices v1, v2 and v3
     //
     // Use Heron's formula
+    float a = glm::length(v1 - v2);
+    float b = glm::length(v1 - v3);
+    float c = glm::length(v2 - v3);
 
-    return 0;
+    float s = (a + b + c) / 2;
+
+    float area = sqrt(s * (s - a) * (s - b) * (s - c));
+
+    return area;
 }
 
 bool TriangleRasterizer::CheckPointInsideTriangle(
@@ -70,8 +77,12 @@ bool TriangleRasterizer::CheckPointInsideTriangle(
     // Use the areas for this process, along with the EPSILON
     // value to compare the areas to account for possible
     // precision errors that may occur
+    float area_v1v2v3 = ComputeTriangleArea(v1.position, v2.position, v3.position);
+    float area_pv1v2 = ComputeTriangleArea(p, v1.position, v2.position);
+    float area_pv1v3 = ComputeTriangleArea(p, v1.position, v3.position);
+    float area_pv2v3 = ComputeTriangleArea(p, v2.position, v3.position);
 
-    return false;
+    return abs(area_v1v2v3 - (area_pv1v3 + area_pv1v2 + area_pv2v3)) < EPSILON;
 }
 
 glm::vec3 TriangleRasterizer::ComputePixelColor(
@@ -85,8 +96,18 @@ glm::vec3 TriangleRasterizer::ComputePixelColor(
     // colors of vertices v1, v2 and v3
     //
     // Use the barycentric coordinates of point p
+    float area_v1v2v3 = ComputeTriangleArea(v1.position, v2.position, v3.position);
+    float area_pv1v2 = ComputeTriangleArea(p, v1.position, v2.position);
+    float area_pv1v3 = ComputeTriangleArea(p, v1.position, v3.position);
+    float area_pv2v3 = ComputeTriangleArea(p, v2.position, v3.position);
 
-    return v3.color;
+    float u = area_pv1v2 / area_v1v2v3;
+    float v = area_pv1v3 / area_v1v2v3;
+    float w = area_pv2v3 / area_v1v2v3;
+
+    glm::vec3 color = u * v3.color + v * v2.color + w * v1.color;
+
+    return color;
 }
 
 float TriangleRasterizer::ComputePixelDepth(
@@ -100,6 +121,16 @@ float TriangleRasterizer::ComputePixelDepth(
     // the depth values (position.z) of vertices v1, v2 and v3
     //
     // Use the barycentric coordinates of point p
+    float area_v1v2v3 = ComputeTriangleArea(v1.position, v2.position, v3.position);
+    float area_pv1v2 = ComputeTriangleArea(p, v1.position, v2.position);
+    float area_pv1v3 = ComputeTriangleArea(p, v1.position, v3.position);
+    float area_pv2v3 = ComputeTriangleArea(p, v2.position, v3.position);
 
-    return v3.position.z;
+    float u = area_pv1v2 / area_v1v2v3;
+    float v = area_pv1v3 / area_v1v2v3;
+    float w = area_pv2v3 / area_v1v2v3;
+
+    float depth = u * v3.position.z + v * v2.position.z + w * v1.position.z;
+
+    return depth;
 }
