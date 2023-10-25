@@ -17,6 +17,7 @@ namespace lab
 
      private:
         void DrawShapes();
+        void DrawBonus();
         void Rasterize(
             const std::vector<VertexFormat> &vertices,
             const std::vector<unsigned int> &indices,
