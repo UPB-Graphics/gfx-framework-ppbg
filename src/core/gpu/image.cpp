@@ -1,7 +1,7 @@
 #include "core/gpu/image.h"
 
 #include <vector>
-#include "stdio.h"
+#include <cstdio>
 
 using namespace gfxc;
 
